@@ -42,6 +42,22 @@ const AdminDashboard = () => {
   const [showSkillModal, setShowSkillModal] = useState(false);
 
   useEffect(() => {
+    // Skip backend calls for demo mode
+    const authToken = localStorage.getItem('authToken');
+    if (authToken && authToken.startsWith('demo-token')) {
+      setLoading(false);
+      setStats({
+        totalContacts: 0,
+        newContacts: 0,
+        totalProjects: 2,
+        featuredProjects: 1
+      });
+      setRecentContacts([]);
+      setProjects([]);
+      setSkills([]);
+      return;
+    }
+    
     loadDashboardData();
     loadProjects();
     loadSkills();
@@ -50,7 +66,27 @@ const AdminDashboard = () => {
 
   const loadSettings = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/settings');
+      const authToken = localStorage.getItem('authToken');
+      if (authToken && authToken.startsWith('demo-token')) {
+        // Use default settings for demo mode
+        setPortfolioSettings({
+          email: 'mahadkhan2095@gmail.com',
+          phone: '+92 300 8367216',
+          location: 'Peshawar',
+          name: 'Mahad Khan',
+          heroTitle: 'AI-Powered Web Developer',
+          heroSubtitle: 'Creating innovative digital solutions with artificial intelligence integration',
+          aboutText: 'Passionate web developer specializing in modern technologies and AI integration',
+          githubUrl: 'https://github.com/mahadkhan',
+          linkedinUrl: 'https://linkedin.com/in/mahadkhan',
+          experience: '0-1 Year',
+          projectsDelivered: '2',
+          clientSatisfaction: '100%'
+        });
+        return;
+      }
+      
+      const response = await fetch('/api/settings');
       if (response.ok) {
         const data = await response.json();
         const settings = data.settings || data;
