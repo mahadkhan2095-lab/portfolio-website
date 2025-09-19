@@ -49,6 +49,7 @@ router.post('/login', async (req, res) => {
 });
 
 // POST - Register (admin only for now)
+// POST - Register (admin only for now)
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
