@@ -19,12 +19,12 @@ const AdminLogin = () => {
     setError('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    // Check demo credentials first
+    // Check demo credentials
     if (formData.email === 'admin@portfolio.com' && formData.password === 'admin123') {
       localStorage.setItem('authToken', 'demo-token-' + Date.now());
       localStorage.setItem('adminUser', JSON.stringify({
@@ -34,21 +34,18 @@ const AdminLogin = () => {
         role: 'admin',
         isDemo: true
       }));
-      setIsLoading(false);
-      window.location.hash = '#/admin';
+      setTimeout(() => {
+        setIsLoading(false);
+        window.location.hash = '#/admin';
+      }, 500);
       return;
     }
 
-    try {
-      const response = await apiService.login(formData.email, formData.password);
-      if (response.success) {
-        window.location.hash = '#/admin';
-      }
-    } catch (error) {
-      setError('Invalid credentials. Please try again.');
-    } finally {
+    // Invalid credentials
+    setTimeout(() => {
+      setError('Invalid credentials. Use admin@portfolio.com / admin123');
       setIsLoading(false);
-    }
+    }, 500);
   };
 
   return (
