@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Code2, Globe, Cpu, Zap, Palette, Sparkles, Star, Brain } from 'lucide-react';
+import { apiService } from '../services/api';
 
 const Skills = () => {
   const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [skills, setSkills] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -18,47 +21,71 @@ const Skills = () => {
     const element = document.getElementById('skills');
     if (element) observer.observe(element);
 
+    loadSkills();
+
     return () => observer.disconnect();
   }, []);
 
-  const skillCategories = [
-    {
-      icon: Code2,
-      title: 'Frontend Development',
-      skills: ['React 18', 'TypeScript', 'JavaScript ES6+', 'HTML5', 'CSS3', 'Component Architecture'],
-      color: 'blue'
-    },
-    {
-      icon: Globe,
-      title: 'Styling & Design',
-      skills: ['Tailwind CSS', 'Responsive Design', 'CSS Grid', 'Flexbox', 'Mobile-First Design', 'CSS Animations'],
-      color: 'orange'
-    },
-    {
-      icon: Zap,
-      title: 'Build Tools & Development',
-      skills: ['Vite', 'ESLint', 'PostCSS', 'npm', 'Git Version Control', 'VS Code'],
-      color: 'yellow'
-    },
-    {
-      icon: Cpu,
-      title: 'AI-Assisted Development',
-      skills: ['AI-Powered Code Generation', 'Content Creation with AI', 'Design Assistance', 'Problem-Solving Prompts', 'Development Workflow Optimization', 'AI-Enhanced Productivity'],
-      color: 'purple'
-    },
-    {
-      icon: Palette,
-      title: 'UI/UX Design',
-      skills: ['User Interface Design', 'User Experience Design', 'Figma', 'Adobe XD', 'Prototyping', 'Design Systems'],
-      color: 'indigo'
-    },
-    {
-      icon: Globe,
-      title: 'Additional Skills',
-      skills: ['HTML5', 'CSS3', 'Bootstrap', 'JavaScript', 'WordPress', 'MS Office'],
-      color: 'green'
+  const loadSkills = async () => {
+    try {
+      const response = await apiService.getSkills();
+      if (response.success) {
+        setSkills(response.skills.filter((skill: any) => skill.isActive));
+      }
+    } catch (error) {
+      console.error('Error loading skills:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'frontend': return Code2;
+      case 'backend': return Cpu;
+      case 'database': return Globe;
+      case 'tools': return Zap;
+      case 'ui-ux': return Palette;
+      default: return Globe;
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'frontend': return 'blue';
+      case 'backend': return 'purple';
+      case 'database': return 'green';
+      case 'tools': return 'yellow';
+      case 'ui-ux': return 'indigo';
+      default: return 'orange';
+    }
+  };
+
+  const getCategoryTitle = (category: string) => {
+    switch (category) {
+      case 'frontend': return 'Frontend Development';
+      case 'backend': return 'Backend Development';
+      case 'database': return 'Database';
+      case 'tools': return 'Tools & Development';
+      case 'ui-ux': return 'UI/UX Design';
+      default: return 'Other Skills';
+    }
+  };
+
+  const skillsByCategory = skills.reduce((acc: any, skill: any) => {
+    if (!acc[skill.category]) {
+      acc[skill.category] = [];
+    }
+    acc[skill.category].push(skill);
+    return acc;
+  }, {});
+
+  const skillCategories = Object.keys(skillsByCategory).map(category => ({
+    icon: getCategoryIcon(category),
+    title: getCategoryTitle(category),
+    skills: skillsByCategory[category].sort((a: any, b: any) => a.order - b.order).map((skill: any) => skill.name),
+    color: getCategoryColor(category)
+  }));
 
   const colorClasses = {
     blue: 'bg-blue-100 text-blue-600 border-blue-200',
@@ -96,8 +123,14 @@ const Skills = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {skillCategories.map((category, index) => (
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="text-gray-600 mt-4">Loading skills...</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {skillCategories.map((category, index) => (
             <div
               key={index}
               className={`group bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-xl hover:border-gray-200 transition-all duration-300 hover:scale-105 relative overflow-hidden ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
@@ -161,8 +194,9 @@ const Skills = () => {
                 </div>
               )}
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* AI Prompt Engineering Showcase */}
         <div className="mt-20">

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <script>
+        console.log('Test page loaded');
+        
+        // Test API connection
+        fetch('http://localhost:5000/api/settings')
+            .then(response => {
+                console.log('API Response Status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('API Data:', data);
+            })
+            .catch(error => {
+                console.error('API Error:', error);
+            });
+    </script>
+</body>
+</html>

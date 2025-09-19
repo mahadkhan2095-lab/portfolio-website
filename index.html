@@ -4,21 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Mahad Khan - AI-powered Web Developer specializing in modern web development with artificial intelligence integration. Creating innovative digital solutions for clients and businesses worldwide." />
+    <meta name="description" content="Portfolio Developer - Creating innovative digital solutions" />
     <meta name="keywords" content="web developer, AI integration, prompt engineering, React, TypeScript, modern web development, portfolio" />
-    <meta name="author" content="Mahad Khan" />
+    <meta name="author" content="Portfolio Developer" />
     
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="Mahad Khan - AI-Powered Web Developer" />
-    <meta property="og:description" content="Specializing in modern web development with AI integration. Creating innovative digital solutions that combine traditional development with cutting-edge artificial intelligence." />
+    <meta property="og:title" content="Portfolio Developer - Web Developer" />
+    <meta property="og:description" content="Creating innovative digital solutions with modern web development." />
     <meta property="og:type" content="website" />
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Mahad Khan - AI-Powered Web Developer" />
-    <meta name="twitter:description" content="Creating innovative web solutions with AI integration and modern development practices." />
+    <meta name="twitter:title" content="Portfolio Developer - Web Developer" />
+    <meta name="twitter:description" content="Creating innovative web solutions with modern development practices." />
     
-    <title>Mahad Khan - AI-Powered Web Developer | Portfolio</title>
+    <title>Portfolio Developer - Web Developer | Portfolio</title>
     
     <!-- Preload critical fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -122,12 +122,63 @@
         image-rendering: -webkit-optimize-contrast;
         image-rendering: crisp-edges;
       }
+      
+      /* Custom animations for admin panel */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes slideUp {
+        from { 
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      
+      .animate-fadeIn {
+        animation: fadeIn 0.3s ease-out;
+      }
+      
+      .animate-slideUp {
+        animation: slideUp 0.4s ease-out;
+      }
+      
+      .animate-slideInLeft {
+        animation: slideInLeft 0.5s ease-out;
+      }
+      
+      .hover\:scale-102:hover {
+        transform: scale(1.02);
+      }
+      
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
     </style>
   </head>
   <body>
     <!-- Loading Spinner -->
     <div class="loading-spinner">
-      <div class="loading-text">Welcome to Mahad Khan's Portfolio</div>
+      <div class="loading-text">Welcome to Portfolio</div>
       <div class="spinner"></div>
     </div>
     

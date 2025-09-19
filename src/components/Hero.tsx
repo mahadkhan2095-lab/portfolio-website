@@ -1,7 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowDown, Sparkles } from 'lucide-react';
 
 const Hero = () => {
+  const [settings, setSettings] = useState({
+    name: 'Mahad Khan',
+    heroTitle: 'AI-Powered Web Developer',
+    heroSubtitle: 'I craft exceptional web experiences using cutting-edge AI and intelligent prompt engineering',
+    projectsDelivered: '2',
+    experience: '0-1',
+    clientSatisfaction: '100%'
+  });
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.settings || data;
+          setSettings({
+            name: settings.name || 'Mahad Khan',
+            heroTitle: settings.heroTitle || 'AI-Powered Web Developer',
+            heroSubtitle: settings.heroSubtitle || 'I craft exceptional web experiences using cutting-edge AI and intelligent prompt engineering',
+            projectsDelivered: settings.projectsDelivered || '2',
+            experience: settings.experience || '0-1',
+            clientSatisfaction: settings.clientSatisfaction || '100%'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    };
+    loadSettings();
+  }, []);
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 relative overflow-hidden">
       {/* Background Effects */}
@@ -23,7 +54,7 @@ const Hero = () => {
           {/* Badge */}
           <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
             <Sparkles className="w-4 h-4 text-yellow-400 mr-2" />
-            <span className="text-sm font-medium text-white">AI-Powered Web Developer</span>
+            <span className="text-sm font-medium text-white">{settings.heroTitle}</span>
           </div>
 
           {/* Main Heading */}
@@ -31,11 +62,11 @@ const Hero = () => {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight">
               Hi, I'm{' '}
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Mahad Khan
+                {settings.name}
               </span>
             </h1>
             <p className="text-xl sm:text-2xl text-blue-100 font-light max-w-3xl mx-auto leading-relaxed">
-              I craft exceptional web experiences using cutting-edge AI and intelligent prompt engineering
+              {settings.heroSubtitle}
             </p>
           </div>
 
@@ -85,15 +116,15 @@ const Hero = () => {
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-16 max-w-2xl mx-auto relative z-10">
             <div className="text-center">
-              <div className="text-3xl font-bold text-white mb-2">2</div>
+              <div className="text-3xl font-bold text-white mb-2">{settings.projectsDelivered}</div>
               <div className="text-blue-200 text-sm">Projects Delivered</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white mb-2">0-1</div>
+              <div className="text-3xl font-bold text-white mb-2">{settings.experience}</div>
               <div className="text-blue-200 text-sm">Year Experience</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white mb-2">100%</div>
+              <div className="text-3xl font-bold text-white mb-2">{settings.clientSatisfaction}</div>
               <div className="text-blue-200 text-sm">Client Satisfaction</div>
             </div>
           </div>

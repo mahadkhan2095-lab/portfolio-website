@@ -3,6 +3,39 @@ import { ArrowLeft, ExternalLink, Github, Monitor, Smartphone, Tablet, Eye, Code
 
 const FacebookProject = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [projectImages, setProjectImages] = useState<string[]>([]);
+
+  // Load Facebook project specific images
+  React.useEffect(() => {
+    const loadFacebookProjectImages = async () => {
+      try {
+        // Get Facebook project ID
+        const response = await fetch('http://localhost:5000/api/projects');
+        if (response.ok) {
+          const data = await response.json();
+          const projects = data.projects || data;
+          const facebookProject = projects.find((p: any) => 
+            p.title.toLowerCase().includes('facebook')
+          );
+          
+          if (facebookProject) {
+            // Load project-specific images
+            const savedImages = localStorage.getItem('mediaManager_projectImages');
+            if (savedImages) {
+              const parsedImages = JSON.parse(savedImages);
+              if (parsedImages[facebookProject._id]) {
+                setProjectImages(parsedImages[facebookProject._id]);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading Facebook project images:', error);
+      }
+    };
+    
+    loadFacebookProjectImages();
+  }, []);
   const features = [
     {
       icon: Eye,
@@ -30,14 +63,18 @@ const FacebookProject = () => {
     'HTML5', 'CSS3', 'JavaScript', 'Responsive Design', 'Flexbox', 'CSS Grid', 'Media Queries', 'Form Validation'
   ];
 
-  const projectImages = [
+  const getProjectImage = (index: number, fallback: string) => {
+    return projectImages[index] || fallback;
+  };
+
+  const projectImageData = [
     {
-      src: '/images/facebook-project/Desktop-view.png',
+      src: getProjectImage(0, 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=800&h=600&fit=crop'),
       alt: 'Facebook Login Page - Desktop View',
       title: 'Desktop View'
     },
     {
-      src: '/images/facebook-project/mobile-view.png',
+      src: getProjectImage(1, 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=600&fit=crop'),
       alt: 'Facebook Login Page - Mobile View',
       title: 'Mobile View'
     }
@@ -83,9 +120,9 @@ const FacebookProject = () => {
 
             </div>
             
-            <div className="relative cursor-pointer group" onClick={() => setSelectedImage('/images/facebook-project/Desktop-view.png')}>
+            <div className="relative cursor-pointer group" onClick={() => setSelectedImage(getProjectImage(0, 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=800&h=600&fit=crop'))}>
               <img
-                src="/images/facebook-project/Desktop-view.png"
+                src={getProjectImage(0, 'https://images.unsplash.com/photo-1611262588024-d12430b98920?w=800&h=600&fit=crop')}
                 alt="Facebook Login Page Preview"
                 className="rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-105"
               />
@@ -136,7 +173,7 @@ const FacebookProject = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {projectImages.map((image, index) => (
+            {projectImageData.map((image, index) => (
               <div key={index} className="group cursor-pointer" onClick={() => setSelectedImage(image.src)}>
                 <div className="relative overflow-hidden rounded-xl shadow-lg">
                   <img

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 
 const OrderSite = () => {
   const [selectedPackage, setSelectedPackage] = useState('');
+  const [contactSettings, setContactSettings] = useState({
+    phone: '+92 300 8367216'
+  });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,6 +15,32 @@ const OrderSite = () => {
     timeline: '',
     budget: ''
   });
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.settings || data;
+          setContactSettings({
+            phone: settings.phone || '+92 300 8367216'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading settings from database:', error);
+      }
+    };
+
+    loadSettings();
+
+    const handleSettingsUpdate = () => {
+      loadSettings();
+    };
+
+    window.addEventListener('portfolioSettingsUpdated', handleSettingsUpdate);
+    return () => window.removeEventListener('portfolioSettingsUpdated', handleSettingsUpdate);
+  }, []);
 
   const packages = [
     {
@@ -79,7 +108,8 @@ Requirements: ${formData.requirements}
 Timeline: ${formData.timeline}
 Budget: ${formData.budget}`;
 
-    const whatsappUrl = `https://wa.me/923008367216?text=${encodeURIComponent(message)}`;
+    const phoneNumber = contactSettings.phone.replace(/[^0-9]/g, '');
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send, Calendar, MessageCircle, CheckCircle } from 'lucide-react';
 
 const Contact = () => {
@@ -11,6 +11,11 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [contactSettings, setContactSettings] = useState({
+    email: 'contact@example.com',
+    phone: '+1 234 567 8900',
+    location: 'Location'
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -24,7 +29,21 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
-      // Create form data for Web3Forms
+      // Save to database first
+      const dbResponse = await fetch('http://localhost:5000/api/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: `Portfolio Contact: ${formData.projectType.replace('-', ' ')}`,
+          message: `Company: ${formData.company || 'Not provided'}\nProject Type: ${formData.projectType.replace('-', ' ')}\n\nMessage:\n${formData.message}`
+        })
+      });
+      
+      // Create form data for Web3Forms (backup email)
       const formDataToSend = new FormData();
       formDataToSend.append('access_key', '3e6d8513-9998-469d-8615-272bc72927da');
       formDataToSend.append('name', formData.name);
@@ -36,14 +55,14 @@ const Contact = () => {
       formDataToSend.append('from_name', formData.name);
       
       // Send email using Web3Forms
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const emailResponse = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         body: formDataToSend
       });
       
-      const result = await response.json();
+      const emailResult = await emailResponse.json();
       
-      if (result.success) {
+      if (emailResult.success) {
         setIsSubmitted(true);
         // Reset form after 3 seconds
         setTimeout(() => {
@@ -57,49 +76,69 @@ const Contact = () => {
           });
         }, 3000);
       } else {
-        throw new Error(result.message || 'Failed to send email');
+        throw new Error(emailResult.message || 'Failed to send email');
       }
     } catch (error) {
-      console.error('Error sending email:', error);
-      alert('Failed to send message. Please try again or contact directly at mahadkhan2095@gmail.com');
+      console.error('Error sending message:', error);
+      alert(`Failed to send message. Please try again or contact directly at ${contactSettings.email}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.settings || data;
+          setContactSettings({
+            email: settings.email || 'contact@example.com',
+            phone: settings.phone || '+1 234 567 8900',
+            location: settings.location || 'Location'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading settings from database:', error);
+      }
+    };
+    loadSettings();
+  }, []);
+
   const contactInfo = [
     {
       icon: Mail,
       label: 'Email',
-      value: 'mahadkhan2095@gmail.com',
-      href: 'mailto:mahadkhan2095@gmail.com'
+      value: contactSettings.email,
+      href: `mailto:${contactSettings.email}`
     },
     {
       icon: Phone,
       label: 'Phone',
-      value: '+92 300 8367216',
+      value: contactSettings.phone,
       href: '#',
       isPhone: true
     },
     {
       icon: MessageCircle,
       label: 'WhatsApp',
-      value: '+92 300 8367216',
+      value: contactSettings.phone,
       href: '#',
       isWhatsApp: true
     },
     {
       icon: MapPin,
       label: 'Location',
-      value: 'Peshawar',
+      value: contactSettings.location,
       href: '#',
       isLocation: true
     }
   ];
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '923008367216';
-    const message = 'Hi Mahad! I found your portfolio and would like to discuss a project with you.';
+    const phoneNumber = contactSettings.phone.replace(/[^0-9]/g, '');
+    const message = 'Hi! I found your portfolio and would like to discuss a project with you.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -130,8 +169,8 @@ const Contact = () => {
                 Looking forward to discussing your project!
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                <a href="mailto:mahadkhan2095@gmail.com" className="text-blue-600 hover:text-blue-700 text-sm">
-                  mahadkhan2095@gmail.com
+                <a href={`mailto:${contactSettings.email}`} className="text-blue-600 hover:text-blue-700 text-sm">
+                  {contactSettings.email}
                 </a>
                 <button
                   onClick={handleWhatsAppClick}
@@ -289,6 +328,7 @@ const Contact = () => {
                       id="name"
                       name="name"
                       required
+                      autoComplete="name"
                       value={formData.name}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
@@ -304,6 +344,7 @@ const Contact = () => {
                       id="email"
                       name="email"
                       required
+                      autoComplete="email"
                       value={formData.email}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"
@@ -321,6 +362,7 @@ const Contact = () => {
                       type="text"
                       id="company"
                       name="company"
+                      autoComplete="organization"
                       value={formData.company}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300"

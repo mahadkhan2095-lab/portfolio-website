@@ -4,6 +4,11 @@ import { Menu, X, Github, Linkedin, Sparkles, Code } from 'lucide-react';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [settings, setSettings] = useState({
+    name: 'Mahad Khan',
+    githubUrl: 'https://github.com/mahadkhan',
+    linkedinUrl: 'https://linkedin.com/in/mahadkhan'
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -11,6 +16,26 @@ const Header = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.settings || data;
+          setSettings({
+            name: settings.name || 'Mahad Khan',
+            githubUrl: settings.githubUrl || 'https://github.com/mahadkhan',
+            linkedinUrl: settings.linkedinUrl || 'https://linkedin.com/in/mahadkhan'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    };
+    loadSettings();
   }, []);
 
   const navItems = [
@@ -21,8 +46,8 @@ const Header = () => {
   ];
 
   const socialLinks = [
-    { icon: Github, href: 'https://github.com/mahadkhan', label: 'GitHub' },
-    { icon: Linkedin, href: 'https://linkedin.com/in/mahadkhan', label: 'LinkedIn' },
+    { icon: Github, href: settings.githubUrl, label: 'GitHub' },
+    { icon: Linkedin, href: settings.linkedinUrl, label: 'LinkedIn' },
   ];
 
   return (
@@ -47,7 +72,7 @@ const Header = () => {
               <h1 className={`text-2xl font-bold transition-all duration-300 group-hover:scale-105 ${
                 isScrolled ? 'text-gray-900' : 'bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent'
               }`}>
-                Mahad Khan
+                {settings.name}
               </h1>
             </div>
           </div>

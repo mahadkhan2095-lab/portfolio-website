@@ -1,13 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Github, Linkedin, Mail, Heart, ArrowUp } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [contactSettings, setContactSettings] = useState({
+    email: 'mahadkhan2095@gmail.com'
+  });
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.settings || data;
+          setContactSettings({
+            email: settings.email || 'mahadkhan2095@gmail.com'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading settings from database:', error);
+      }
+    };
+
+    loadSettings();
+
+    const handleSettingsUpdate = () => {
+      loadSettings();
+    };
+
+    window.addEventListener('portfolioSettingsUpdated', handleSettingsUpdate);
+    return () => window.removeEventListener('portfolioSettingsUpdated', handleSettingsUpdate);
+  }, []);
   
   const socialLinks = [
     { icon: Github, href: 'https://github.com/mahadkhan', label: 'GitHub' },
     { icon: Linkedin, href: 'https://linkedin.com/in/mahadkhan', label: 'LinkedIn' },
-    { icon: Mail, href: 'mailto:mahadkhan2095@gmail.com', label: 'Email' },
+    { icon: Mail, href: `mailto:${contactSettings.email}`, label: 'Email' },
   ];
 
   const scrollToTop = () => {

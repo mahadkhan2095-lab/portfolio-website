@@ -4,6 +4,11 @@ import { Brain, Code, Zap, Users, Sparkles, Star, ArrowRight } from 'lucide-reac
 const About = () => {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [profileImage, setProfileImage] = useState<string>('');
+  const [settings, setSettings] = useState({
+    location: 'Peshawar',
+    experience: '0-1 Year'
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -19,6 +24,41 @@ const About = () => {
     if (element) observer.observe(element);
 
     return () => observer.disconnect();
+  }, []);
+
+  // Load profile image from localStorage
+  useEffect(() => {
+    try {
+      const savedImages = localStorage.getItem('mediaManager_uploadedImages');
+      if (savedImages) {
+        const parsedImages = JSON.parse(savedImages);
+        if (parsedImages.profile && parsedImages.profile.length > 0) {
+          setProfileImage(parsedImages.profile[0]); // Use first uploaded profile image
+        }
+      }
+    } catch (error) {
+      console.error('Error loading profile image:', error);
+    }
+  }, []);
+
+  // Load settings from database
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.settings || data;
+          setSettings({
+            location: settings.location || 'Peshawar',
+            experience: settings.experience || '0-1 Year'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    };
+    loadSettings();
   }, []);
 
   const features = [
@@ -76,8 +116,8 @@ const About = () => {
             <div className={`relative group transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
               <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
               <img
-                src="https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=800&h=800"
-                alt="Web developer workspace with code on screen"
+                src={profileImage || "https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=800&h=800"}
+                alt={profileImage ? "Profile photo" : "Web developer workspace with code on screen"}
                 className="rounded-2xl shadow-2xl w-full h-96 object-cover group-hover:scale-105 transition-transform duration-500 relative z-10"
               />
               <div className="absolute -bottom-6 -right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl shadow-xl group-hover:scale-110 transition-transform duration-300 z-20">
@@ -100,11 +140,11 @@ const About = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center group hover:bg-blue-50 p-2 rounded-lg transition-colors duration-200">
                   <span className="text-gray-600">Location</span>
-                  <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">Peshawar</span>
+                  <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">{settings.location}</span>
                 </div>
                 <div className="flex justify-between items-center group hover:bg-blue-50 p-2 rounded-lg transition-colors duration-200">
                   <span className="text-gray-600">Experience</span>
-                  <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">0-1 Year</span>
+                  <span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">{settings.experience}</span>
                 </div>
                 <div className="flex justify-between items-center group hover:bg-blue-50 p-2 rounded-lg transition-colors duration-200">
                   <span className="text-gray-600">Specialization</span>

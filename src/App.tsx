@@ -9,9 +9,13 @@ import Footer from './components/Footer';
 import FacebookProject from './components/FacebookProject';
 import PortfolioProject from './components/PortfolioProject';
 import AIPromptProject from './components/AIPromptProject';
+import CarAntiTheftProject from './components/CarAntiTheftProject';
 import OrderSite from './components/OrderSite';
 import InteractiveFeatures from './components/InteractiveFeatures';
 import BackToTop from './components/BackToTop';
+import AdminDashboard from './components/AdminDashboard';
+import AdminLogin from './components/AdminLogin';
+import MediaManager from './components/MediaManager';
 
 function App() {
   const [currentPath, setCurrentPath] = useState(window.location.hash);
@@ -37,8 +41,28 @@ function App() {
     return <AIPromptProject />;
   }
   
+  if (currentPath === '#/car-antitheft-project') {
+    return <CarAntiTheftProject />;
+  }
+  
   if (currentPath === '#/order-site') {
     return <OrderSite />;
+  }
+  
+  if (currentPath === '#/admin') {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      return <AdminLogin />;
+    }
+    return <AdminDashboard />;
+  }
+  
+  if (currentPath === '#/admin/login') {
+    return <AdminLogin />;
+  }
+  
+  if (currentPath === '#/media-manager') {
+    return <MediaManager />;
   }
   
   return (
