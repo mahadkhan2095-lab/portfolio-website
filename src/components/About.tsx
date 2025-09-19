@@ -26,19 +26,35 @@ const About = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Load profile image from localStorage
+  // Load profile image from database first, then localStorage as fallback
   useEffect(() => {
-    try {
-      const savedImages = localStorage.getItem('mediaManager_uploadedImages');
-      if (savedImages) {
-        const parsedImages = JSON.parse(savedImages);
-        if (parsedImages.profile && parsedImages.profile.length > 0) {
-          setProfileImage(parsedImages.profile[0]); // Use first uploaded profile image
+    const loadProfileImage = async () => {
+      try {
+        // Try to load from database first
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.settings || data;
+          if (settings.profileImage) {
+            setProfileImage(settings.profileImage);
+            return;
+          }
         }
+        
+        // Fallback to localStorage
+        const savedImages = localStorage.getItem('mediaManager_uploadedImages');
+        if (savedImages) {
+          const parsedImages = JSON.parse(savedImages);
+          if (parsedImages.profile && parsedImages.profile.length > 0) {
+            setProfileImage(parsedImages.profile[0]);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile image:', error);
       }
-    } catch (error) {
-      console.error('Error loading profile image:', error);
-    }
+    };
+    
+    loadProfileImage();
   }, []);
 
   // Load settings from database

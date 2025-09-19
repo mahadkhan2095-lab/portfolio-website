@@ -86,27 +86,39 @@ const MediaManager = () => {
     saveProjectImages(updatedImages);
   };
 
-  const handleProfileUpload = (files: FileList | null) => {
+  const handleProfileUpload = async (files: FileList | null) => {
     if (!files) return;
     
     setUploading(true);
     const file = files[0];
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       if (e.target?.result) {
         const imageData = e.target.result as string;
         
-        // Save to project images format
-        const updatedImages = {
-          ...projectImages,
-          profile: [imageData]
-        };
-        saveProjectImages(updatedImages);
-        
-        // Also save to general media manager format
-        const generalImages = JSON.parse(localStorage.getItem('mediaManager_uploadedImages') || '{}');
-        generalImages.profile = [imageData];
-        localStorage.setItem('mediaManager_uploadedImages', JSON.stringify(generalImages));
+        try {
+          // Save to database
+          await fetch('http://localhost:5000/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ profileImage: imageData })
+          });
+          
+          // Save to project images format for immediate display
+          const updatedImages = {
+            ...projectImages,
+            profile: [imageData]
+          };
+          saveProjectImages(updatedImages);
+          
+          // Also save to general media manager format
+          const generalImages = JSON.parse(localStorage.getItem('mediaManager_uploadedImages') || '{}');
+          generalImages.profile = [imageData];
+          localStorage.setItem('mediaManager_uploadedImages', JSON.stringify(generalImages));
+          
+        } catch (error) {
+          console.error('Error saving profile image:', error);
+        }
         
         setUploading(false);
       }
