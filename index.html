@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Mahad Khan - AI-powered Web Developer specializing in modern web development with artificial intelligence integration. Creating innovative digital solutions for clients and businesses worldwide." />
+    <meta name="keywords" content="web developer, AI integration, prompt engineering, React, TypeScript, modern web development, portfolio" />
+    <meta name="author" content="Mahad Khan" />
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Mahad Khan - AI-Powered Web Developer" />
+    <meta property="og:description" content="Specializing in modern web development with AI integration. Creating innovative digital solutions that combine traditional development with cutting-edge artificial intelligence." />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mahad Khan - AI-Powered Web Developer" />
+    <meta name="twitter:description" content="Creating innovative web solutions with AI integration and modern development practices." />
+    
+    <title>Mahad Khan - AI-Powered Web Developer | Portfolio</title>
+    
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <style>
+      /* Prevent flash of unstyled content */
+      html {
+        scroll-behavior: smooth;
+      }
+      
+      /* Global smoothness optimizations */
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      body {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+      }
+      
+      /* Optimize transitions globally */
+      *,
+      *::before,
+      *::after {
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      /* Hardware acceleration for smooth animations */
+      .group:hover,
+      [class*="hover:"],
+      [class*="transition"] {
+        transform: translateZ(0);
+        will-change: transform, opacity;
+      }
+      
+      /* Loading animation */
+      .loading-spinner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1e3a8a, #1e40af, #3730a3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      
+      .loading-text {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
+      
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Hide loading spinner when page is loaded */
+      .loaded .loading-spinner {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      /* Smooth scrolling for all browsers */
+      @media (prefers-reduced-motion: no-preference) {
+        html {
+          scroll-behavior: smooth;
+        }
+      }
+      
+      /* Optimize rendering */
+      img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner">
+      <div class="loading-text">Welcome to Mahad Khan's Portfolio</div>
+      <div class="spinner"></div>
+    </div>
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <script>
+      // Hide loading spinner when page is fully loaded
+      window.addEventListener('load', function() {
+        document.body.classList.add('loaded');
+        setTimeout(function() {
+          const spinner = document.querySelector('.loading-spinner');
+          if (spinner) {
+            spinner.remove();
+          }
+        }, 300);
+      });
+    </script>
+  </body>
+</html>
