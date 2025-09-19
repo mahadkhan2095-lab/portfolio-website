@@ -1349,6 +1349,112 @@ const AdminDashboard = () => {
     </div>
   );
 
+  const renderAccountView = () => {
+    const [accountForm, setAccountForm] = useState({
+      currentEmail: 'admin@portfolio.com',
+      currentPassword: 'admin123',
+      newEmail: '',
+      newPassword: '',
+      newUsername: ''
+    });
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const handleAccountUpdate = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsUpdating(true);
+
+      try {
+        const response = await fetch('/api/auth/update-credentials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(accountForm)
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.setItem('authToken', result.token);
+          alert('Credentials updated successfully! You are now using your new account.');
+          setCurrentView('dashboard');
+        } else {
+          alert('Error: ' + result.message);
+        }
+      } catch (error) {
+        alert('Error updating credentials');
+      } finally {
+        setIsUpdating(false);
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Account Settings</h2>
+          <button
+            onClick={() => setCurrentView('dashboard')}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            ← Back
+          </button>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Update Admin Credentials</h3>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <p className="text-yellow-800 text-sm">
+              <strong>Note:</strong> You are currently using demo credentials. Update them to secure your admin panel.
+            </p>
+          </div>
+
+          <form onSubmit={handleAccountUpdate} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">New Username</label>
+                <input
+                  type="text"
+                  value={accountForm.newUsername}
+                  onChange={(e) => setAccountForm({...accountForm, newUsername: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter new username"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">New Email</label>
+                <input
+                  type="email"
+                  value={accountForm.newEmail}
+                  onChange={(e) => setAccountForm({...accountForm, newEmail: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter new email"
+                  required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+              <input
+                type="password"
+                value={accountForm.newPassword}
+                onChange={(e) => setAccountForm({...accountForm, newPassword: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter new password"
+                minLength={6}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isUpdating}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUpdating ? 'Updating...' : 'Update Credentials'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   const renderSkillsView = () => {
     const skillsByCategory = skills.reduce((acc: any, skill: any) => {
       if (!acc[skill.category]) acc[skill.category] = [];
@@ -1527,6 +1633,7 @@ const AdminDashboard = () => {
                     {currentView === 'technologies' && 'Manage your tech stack and tools'}
                     {currentView === 'media' && 'Upload and manage images'}
                     {currentView === 'settings' && 'Edit contact information and content'}
+                    {currentView === 'account' && 'Update your admin login credentials'}
                   </p>
                 </div>
               </div>
@@ -1535,6 +1642,13 @@ const AdminDashboard = () => {
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-green-700 text-sm font-medium">Online</span>
                 </div>
+                <button
+                  onClick={() => setCurrentView('account')}
+                  className="group px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="text-sm font-medium">Account</span>
+                </button>
                 <button
                   onClick={() => {
                     localStorage.removeItem('authToken');
@@ -1617,6 +1731,7 @@ const AdminDashboard = () => {
         {currentView === 'skills' && renderSkillsView()}
         {currentView === 'technologies' && renderTechnologiesView()}
         {currentView === 'settings' && renderSettingsView()}
+        {currentView === 'account' && renderAccountView()}
         {currentView === 'media' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
