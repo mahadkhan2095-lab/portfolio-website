@@ -24,6 +24,21 @@ const AdminLogin = () => {
     setIsLoading(true);
     setError('');
 
+    // Check demo credentials first
+    if (formData.email === 'admin@portfolio.com' && formData.password === 'admin123') {
+      localStorage.setItem('authToken', 'demo-token-' + Date.now());
+      localStorage.setItem('adminUser', JSON.stringify({
+        id: 'demo',
+        username: 'admin',
+        email: 'admin@portfolio.com',
+        role: 'admin',
+        isDemo: true
+      }));
+      setIsLoading(false);
+      window.location.hash = '#/admin';
+      return;
+    }
+
     try {
       const response = await apiService.login(formData.email, formData.password);
       if (response.success) {
