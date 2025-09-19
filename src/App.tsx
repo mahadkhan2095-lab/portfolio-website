@@ -57,6 +57,19 @@ function App() {
     return <AdminDashboard />;
   }
   
+  if (currentPath === '#/admin-direct') {
+    // Direct admin access for demo
+    localStorage.setItem('authToken', 'demo-token-direct');
+    localStorage.setItem('adminUser', JSON.stringify({
+      id: 'demo',
+      username: 'admin',
+      email: 'admin@portfolio.com',
+      role: 'admin',
+      isDemo: true
+    }));
+    return <AdminDashboard />;
+  }
+  
   if (currentPath === '#/admin/login') {
     return <AdminLogin />;
   }
