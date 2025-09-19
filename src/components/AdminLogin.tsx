@@ -124,7 +124,34 @@ const AdminLogin = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
+            <button
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      username: 'admin',
+                      email: 'admin@portfolio.com',
+                      password: 'admin123',
+                      role: 'admin'
+                    })
+                  });
+                  const result = await response.json();
+                  if (result.success) {
+                    alert('Admin user created! Now login with admin@portfolio.com / admin123');
+                  } else {
+                    alert('User might already exist. Try logging in.');
+                  }
+                } catch (error) {
+                  alert('Error creating user. Try the demo credentials.');
+                }
+              }}
+              className="block w-full text-green-600 hover:text-green-700 text-sm font-medium mb-2 py-2 border border-green-300 rounded-lg hover:bg-green-50"
+            >
+              Create Admin User
+            </button>
             <button
               onClick={() => window.location.hash = '#/'}
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"
